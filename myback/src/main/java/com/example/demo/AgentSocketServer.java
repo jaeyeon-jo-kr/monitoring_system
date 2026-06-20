@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.server.*;;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,6 +17,12 @@ public class AgentSocketServer implements CommandLineRunner {
     private static final int PORT = 4567;
 
     private final ExecutorService threadPool = Executors.newFixedThreadPool(10);
+
+    private final SystemStatusManager statusManager;
+
+    public AgentSocketServer(SystemStatusManager statusManager) {
+        this.statusManager = statusManager;
+    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -93,7 +100,7 @@ public class AgentSocketServer implements CommandLineRunner {
             System.out.println("📈 [실시간 지표] 호스트: " + hostname + 
             " -> CPU 사용량: " + cpuUsage + "%" + 
             " , Memory 사용량: " + memoryUsage + "%");
-            // TODO: 시계열 수집 DB(MySQL/Redis)에 저장 및 웹소켓을 통한 Vue.js 실시간 푸시 공간
+            statusManager.updateStatus(hostname, cpuUsage, memoryUsage);
         }
     }
 }

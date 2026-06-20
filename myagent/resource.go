@@ -9,7 +9,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-type cpuInfo struct {
+type CpuInfo struct {
 	brand string
 	core  uint8
 }
@@ -17,8 +17,8 @@ type cpuInfo struct {
 type CpuStatus struct {
 }
 
-func GetCpuInfo() (cpuInfo, error) {
-	info := cpuInfo{brand: "", core: 0}
+func GetCpuInfo() (CpuInfo, error) {
+	info := CpuInfo{brand: "", core: 0}
 
 	brand, err := unix.Sysctl("machdep.cpu.brand_string")
 	info.brand = brand
@@ -40,7 +40,7 @@ func GetCpuInfo() (cpuInfo, error) {
 	return info, nil
 }
 
-func CpuInfoToStr(info cpuInfo) string {
+func CpuInfoToStr(info CpuInfo) string {
 	strInfo := ""
 	strInfo = fmt.Sprintf("CPU_INFO|%s|%d\n", info.brand, info.core)
 	return strInfo
