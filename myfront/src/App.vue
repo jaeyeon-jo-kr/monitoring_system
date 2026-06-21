@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
-import MonitoringTest from './components/MonitoringTest.vue';
+import MonitoringTest from './components/MonitoringTest.vue'
+import MonitoringChart from './components/MonitoringChart.vue';
 </script>
 
 <template>
@@ -19,8 +20,10 @@ import MonitoringTest from './components/MonitoringTest.vue';
     </div>
   </header>
   -->
-  <MonitoringTest />
+  <!-- <MonitoringTest />-->
+  
   <RouterView />
+  <MonitoringChart />
 </template>
 
 <style scoped>
