@@ -21,8 +21,7 @@ import MonitoringChart from './components/MonitoringChart.vue';
   </header>
   -->
   <!-- <MonitoringTest />-->
-  
-  <RouterView />
+
   <MonitoringChart />
 </template>
 
