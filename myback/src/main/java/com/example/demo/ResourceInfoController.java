@@ -12,9 +12,9 @@ public class ResourceInfoController {
         this.statusManager = statusManager;
     }
 
-    @MessageMapping("/info")
+    @MessageMapping("/request_system_list")
     @SendTo("/topic/system_list")
-    public String SystemList()
+    public String SystemList(String message)
     {
        return statusManager.getSystemList();
     }

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-import MonitoringTest from './components/MonitoringTest.vue'
 import MonitoringChart from './components/MonitoringChart.vue';
+import MonitoringChartList from './components/MonitoringChartList.vue';
 </script>
 
 <template>
-  <MonitoringChart />
+  <!-- <MonitoringChart /> -->
+  <MonitoringChartList/>
 </template>
 
 <style scoped>

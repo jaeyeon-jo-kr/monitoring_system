@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch, watchEffect } from 'vue'
 import { LineChart } from 'vue-chart-3'
 import { Chart, registerables } from 'chart.js'
 import { type ChartData } from 'chart.js'
-import { connectWebSocket, deactivateWebSocket, isConnected } from '../websocket/websocket.ts'
+import { subscriptionMap, connectWebSocket, deactivateWebSocket, isConnected, SUBSCRIBE_CPU_INFO_TOPIC } from '../websocket/websocket.ts'
 import { memoryUsage } from 'process'
+
+const props = defineProps<{
+  hostname?: string
+  cpuUsage: string
+  memoryUsage: string 
+}>()
 
 Chart.register(...registerables)
 
@@ -35,7 +41,7 @@ const chartData = ref<ChartData<'line'>>({
   ]
 })
 
-const updateCpuUsage = (cpuUsage:any) => {
+const updateCpuUsage = (cpuUsage:string) => {
     if (!chartData.value.datasets[0]?.data) 
         return
     chartData.value.datasets[0].data.push(parseInt(cpuUsage))
@@ -49,7 +55,7 @@ const updateCpuUsage = (cpuUsage:any) => {
     }
 }
 
-const updateMemoryUsage = (memoryUsage:any) => {
+const updateMemoryUsage = (memoryUsage:string) => {
     // y축 데이터 배열에 실시간 CPU 값 추가
     if (!chartData.value.datasets[1]?.data) 
         return
@@ -80,6 +86,18 @@ const updateChart = (messageBody:string) => {
     updateMemoryUsage(metrics.memoryUsage)
 }
 
+watchEffect(() => {
+    const now = new Date()
+    const timeStr:string = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
+
+    if (!chartData.value.labels) 
+        chartData.value.labels = []
+    chartData.value.labels.push(timeStr)
+
+    updateCpuUsage(props.cpuUsage)
+    updateMemoryUsage(props.memoryUsage)
+})
+
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
@@ -106,7 +124,8 @@ const chartOptions = {
 // 라이프사이클 관리
 onMounted(() => {
     // Chart.js에 필요한 내부 엔진(컴포넌트들)을 등록합니다.
-    connectWebSocket(updateChart) 
+    subscriptionMap.set(SUBSCRIBE_CPU_INFO_TOPIC, updateChart)
+    connectWebSocket(() => {}) 
     setTimeout(() => {connectedStatus.value = isConnected()}, 1000 )
 })
 
@@ -118,7 +137,9 @@ onUnmounted(() => {
 <template>
   <div class="chart-container">
     <div class="chart-header">
-      <h2>🖥️ 실시간 CPU 사용률 관제</h2>
+      <h2>🖥️ 실시간 시스템 사용률 관제<br/>
+           hostname : {{ props.hostname }}
+      </h2>
       <span class="status-badge" :class="{ online: connectedStatus }">
         {{ connectedStatus ? '● LIVE' : '○ DISCONNECTED' }}
       </span>
