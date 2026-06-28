@@ -64,22 +64,22 @@ func RunClient() {
 				break
 			}
 			fmt.Printf("sended packet len : %d\n", n)
-		// case <-ticker2.C:
-		// 	Send Mocking data
-		// 	n1, err := conn.Write([]byte("DATA|MockingCom1|13.10|80.99"))
-		// 	if err != nil {
-		// 		fmt.Printf("Write resource status error %s\n", err)
-		// 		break
-		// 	}
-		// 	fmt.Printf("sended packet len : %d\n", n1)
-		// case <-ticker3.C:
-		// 	Send Mocking data
-		// 	n, err = conn.Write([]byte("DATA|MockingCom2|17.10|70.99"))
-		// 	if err != nil {
-		// 		fmt.Printf("Write resource status error %s\n", err)
-		// 		break
-		// 	}
-		// 	fmt.Printf("sended packet len : %d\n", n)
+		case <-ticker2.C:
+			//Send Mocking data
+			n1, err := conn.Write([]byte("DATA|MockingCom1|13.10|80.99\n"))
+			if err != nil {
+				fmt.Printf("Write resource status error %s\n", err)
+				break
+			}
+			fmt.Printf("sended packet len : %d\n", n1)
+		case <-ticker3.C:
+			// Send Mocking data
+			n, err = conn.Write([]byte("DATA|MockingCom2|17.10|70.99\n"))
+			if err != nil {
+				fmt.Printf("Write resource status error %s\n", err)
+				break
+			}
+			fmt.Printf("sended packet len : %d\n", n)
 		case sig := <-sigChan:
 			fmt.Printf("Sig interuptted : %v\n", sig)
 			return
