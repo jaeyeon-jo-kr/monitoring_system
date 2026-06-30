@@ -29,12 +29,6 @@ func RunClient() {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
-	ticker2 := time.NewTicker(1*time.Second + 100)
-	defer ticker2.Stop()
-
-	ticker3 := time.NewTicker(1*time.Second + 120)
-	defer ticker3.Stop()
-
 	cpuInfo, err := GetCpuInfo()
 	if err != nil {
 		fmt.Printf("Cpu Info Getting error %s\n", err)
@@ -59,22 +53,6 @@ func RunClient() {
 				break
 			}
 			n, err := conn.Write([]byte(resourceStatus))
-			if err != nil {
-				fmt.Printf("Write resource status error %s\n", err)
-				break
-			}
-			fmt.Printf("sended packet len : %d\n", n)
-		case <-ticker2.C:
-			//Send Mocking data
-			n1, err := conn.Write([]byte("DATA|MockingCom1|13.10|80.99\n"))
-			if err != nil {
-				fmt.Printf("Write resource status error %s\n", err)
-				break
-			}
-			fmt.Printf("sended packet len : %d\n", n1)
-		case <-ticker3.C:
-			// Send Mocking data
-			n, err = conn.Write([]byte("DATA|MockingCom2|17.10|70.99\n"))
 			if err != nil {
 				fmt.Printf("Write resource status error %s\n", err)
 				break

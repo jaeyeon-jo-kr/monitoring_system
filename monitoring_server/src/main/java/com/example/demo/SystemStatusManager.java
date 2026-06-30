@@ -15,8 +15,8 @@ public class SystemStatusManager {
        this.deviceStatusMap  = new ConcurrentHashMap<String, DeviceStatus>();
     }
     
-    public synchronized DeviceStatus updateStatus(String hostname, double cpuUsage, double memoryUsage) {
-        DeviceStatus deviceStatus = new DeviceStatus(hostname,cpuUsage,memoryUsage);
+    public synchronized DeviceStatus updateStatus(String hostname, double cpuUsage, double memoryUsage, long rx, long tx) {
+        DeviceStatus deviceStatus = new DeviceStatus(hostname,cpuUsage,memoryUsage, rx, tx);
         deviceStatusMap.put(hostname, deviceStatus);
         return deviceStatus;
     }

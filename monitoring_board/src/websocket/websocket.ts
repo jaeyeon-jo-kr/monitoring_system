@@ -1,7 +1,7 @@
 import { Client, type IMessage } from '@stomp/stompjs'
 
 export const WEBSOCKET_URL = 'ws://localhost:8080/ws-monitoring' 
-export const SUBSCRIBE_CPU_INFO_TOPIC = '/topic/cpu_info'
+export const SUBSCRIBE_CPU_INFO_TOPIC = '/topic/system_status'
 export const SUBSCRIBE_SYSTEM_LIST_TOPIC = '/topic/system_list'
 type TopicType = string;
 type HandlerType = (_:string)=> void;

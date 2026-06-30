@@ -104,14 +104,12 @@ public class AgentSocketServer implements CommandLineRunner {
             String hostname = tokens[1];
             double cpuUsage = Double.parseDouble(tokens[2]);
             double memoryUsage = Double.parseDouble(tokens[3]);
-            System.out.println("📈 [실시간 지표] 호스트: " + hostname + 
-            " -> CPU 사용량: " + cpuUsage + "%" + 
-            " , Memory 사용량: " + memoryUsage + "%");
-
-            DeviceStatus deviceStatus = statusManager.updateStatus(hostname, cpuUsage, memoryUsage);
+            long rx = Long.parseLong(tokens[4]);
+            long tx = Long.parseLong(tokens[5]);
+            DeviceStatus deviceStatus = statusManager.updateStatus(hostname, cpuUsage, memoryUsage, rx, tx);
             String response = mapper.writeValueAsString(deviceStatus);
             System.out.println("response:" + response);
-            messagingTemplate.convertAndSend("/topic/cpu_info", response);
+            messagingTemplate.convertAndSend("/topic/system_status", response);
         }
     }
 }

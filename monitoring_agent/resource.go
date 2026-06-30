@@ -57,7 +57,7 @@ func GetCpuStatus() string {
 func GetResourceStatus() (string, error) {
 	virtualMemory, err := mem.VirtualMemory()
 	if err != nil {
-		fmt.Errorf("get virtual memory error err : %s \n", err)
+		err = fmt.Errorf("get virtual memory error err : %s \n", err)
 		return "", err
 	}
 
@@ -65,7 +65,7 @@ func GetResourceStatus() (string, error) {
 
 	percents, err := cpu.Percent(0, false)
 	if err != nil {
-		fmt.Errorf("get cpu Percentage error err : %s \n", err)
+		err = fmt.Errorf("get cpu Percentage error err : %s \n", err)
 		return "", err
 	}
 
@@ -78,10 +78,18 @@ func GetResourceStatus() (string, error) {
 	averageCpu := totalCpu / float64(cpuCount)
 	hostName, err := os.Hostname()
 	if err != nil {
-		fmt.Errorf("get cpu HostName error err : %s \n", err)
+		err = fmt.Errorf("get cpu HostName error err : %s \n", err)
 		return "", err
 	}
-	message := fmt.Sprintf("DATA|%s|%f|%f\n", hostName, averageCpu, usedPercentMemory)
+
+	networkUsage, err := GetNetworkUsage()
+
+	if err != nil {
+		err = fmt.Errorf("err %s\n", err)
+		return "", err
+	}
+
+	message := fmt.Sprintf("DATA|%s|%f|%f|%d|%d\n", hostName, averageCpu, usedPercentMemory, networkUsage.RxBytes, networkUsage.TxBytes)
 
 	fmt.Printf("%s\n", message)
 	return message, nil
