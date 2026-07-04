@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import MonitoringChart from './components/MonitoringChartPane.vue/index.js';
+
 import MonitoringChartList from './components/MonitoringChartList.vue';
 import NavigationBar from './components/NavigationBar.vue';
 </script>
 
 <template>
-  <!-- <MonitoringChart /> -->
-   <v-app>
+  <v-app> 
     <NavigationBar/>
-    <MonitoringChartList/>
+    <MonitoringChartList/> 
    </v-app>  
 </template>
 

@@ -24,7 +24,7 @@ const props = defineProps<{
       </span>
     </div>
     <SingleSeriesChart :label="'CPU 使用率'" :value="cpuUsage"/>
-    <SingleSeriesChart :label="'Memory 使用率'" :value="cpuUsage"/>
+    <SingleSeriesChart :label="'Memory 使用率'" :value="memoryUsage"/>
   </div>
 </template>
 

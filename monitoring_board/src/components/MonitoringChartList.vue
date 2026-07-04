@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { requestLatestStatus, connectWebSocket, deactivateWebSocket, isConnected, SUBSCRIBE_SYSTEM_LIST_TOPIC, subscriptionMap, SUBSCRIBE_CPU_INFO_TOPIC } from '../websocket/websocket.ts'
-import MonitoringChart from './MonitoringChartPane.vue/index.js'
 import MonitoringChartPane from './MonitoringChartPane.vue'
 interface SystemStatus {
     hostname:string

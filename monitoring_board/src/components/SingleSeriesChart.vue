@@ -2,6 +2,8 @@
 import { ref, watch } from 'vue'
 import { Chart, registerables } from 'chart.js'
 import { type ChartData } from 'chart.js'
+import { LineChart } from 'vue-chart-3'
+
 const props = defineProps<{
     label:string,
     value?:string
@@ -22,24 +24,16 @@ const chartData = ref<ChartData<'line'>>({
     ]
 })
 
-watch(props, (newProps, oldProps) => {
-  if (!newProps)
-    return
-  // if there's no value, nothing to update
-  if (!newProps.value)
-    return
-  if (oldProps?.value !== newProps.value) {
-    updateChart(getTimeStamp(), newProps.value)
-  }
-}, { immediate: true })
-
 const updateChart = (label:string, newValue:string) => {
     if(!chartData.value.labels)
         return
     if (chartData.value.labels?.length > 20) {
+        console.debug("shift chart")
         chartData.value.labels?.shift()
         chartData.value.datasets[0]?.data.shift()
     }
+    console.debug("update chart : label", label)
+    console.debug("update chart : newValue", newValue)
     chartData.value.labels?.push(label)
     chartData.value.datasets[0]?.data.push(parseInt(newValue))
 }
@@ -48,6 +42,21 @@ const getTimeStamp = ():string => {
     const now = new Date()
     return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
 }
+
+watch(props, (oldProps,newProps) => {
+  console.debug('catch data modification')
+  console.debug('old value : ', oldProps.value)
+  if (!newProps)
+    return
+  // if there's no value, nothing to update
+  if (!newProps.value)
+    return
+    updateChart(getTimeStamp(), newProps.value)
+}, { immediate: true })
+
+
+
+
 
 
 const chartOptions = {

@@ -32,9 +32,11 @@ public class SystemStatusService {
     public synchronized String getSystemList(){
         StringBuilder stringBuilder = new StringBuilder();
         Enumeration<String> hostnames = deviceStatusMap.keys();
-        
+
         hostnames.asIterator().forEachRemaining
             (hostname -> stringBuilder.append(hostname).append('|'));
+        if(stringBuilder.length() == 0)
+            return "";
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         System.err.println("Get System List:" + stringBuilder.toString());
         return stringBuilder.toString();
