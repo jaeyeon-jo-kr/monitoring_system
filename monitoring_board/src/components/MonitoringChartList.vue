@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { requestLatestStatus, connectWebSocket, deactivateWebSocket, isConnected, SUBSCRIBE_SYSTEM_LIST_TOPIC, subscriptionMap, SUBSCRIBE_CPU_INFO_TOPIC } from '../websocket/websocket.ts'
-import MonitoringChart from './MonitoringChart.vue'
+import MonitoringChart from './MonitoringChartPane.vue/index.js'
+import MonitoringChartPane from './MonitoringChartPane.vue'
 interface SystemStatus {
     hostname:string
     cpuUsage:string
     memoryUsage:string
+    rx:string
+    tx:string
 }
 const connectedStatus = ref(false)
 const hostNameList = ref<SystemStatus[]>([])
@@ -16,20 +19,24 @@ const updateSystemList = (messageBody:string) => {
     const hostnames = messageBody.split('|')
     hostNameList.value = hostnames.map
         ((hostname) => {
-            return {hostname: hostname, cpuUsage:'0', memoryUsage:'0'} as SystemStatus})
+            return {hostname: hostname, cpuUsage:'0', memoryUsage:'0', rx:'0', tx:'0'} as SystemStatus})
 }
 
 
 const updateSystemCharts = (messageBody:string) => {
     const metrics = JSON.parse(messageBody)
+    console.debug('message body',messageBody)
+   
     hostNameList.value = hostNameList.value.map((system) => 
         {
             if(system.hostname === metrics.hostname)
             {
                 return {
                     hostname:system.hostname,
-                    cpuUsage:metrics.cpuUsage,
-                    memoryUsage:metrics.memoryUsage
+                    cpuUsage:String(metrics.cpuUsage),
+                    memoryUsage:String(metrics.memoryUsage),
+                    rx:String(metrics.rx),
+                    tx:String(metrics.tx)
                 }
             }else{
                 return system
@@ -55,8 +62,10 @@ onUnmounted(() => {
 
 <template>
     <div>
-        <MonitoringChart v-for="({hostname, cpuUsage, memoryUsage}, index) in hostNameList"  
-        :key="index" :hostname="hostname" :cpu-usage="cpuUsage" :memory-usage="memoryUsage"/>
+        <MonitoringChartPane v-for="({hostname, cpuUsage, memoryUsage, rx, tx}, index) in hostNameList"  
+        :key="index" :hostname="hostname" :cpu-usage="cpuUsage" :memory-usage="memoryUsage" :rx="rx" :tx="tx"
+        :connected-status = "connectedStatus"
+        />
     </div>
 </template>
 

@@ -21,12 +21,12 @@ const connectWebSocket = () => {
   // 웹소켓 연결 성공 시 콜백
   stompClient.onConnect = () => {
     isConnected.value = true
-    console.log('✅ Spring 웹소켓 브로커 연결 성공!')
+    console.debug('✅ Spring 웹소켓 브로커 연결 성공!')
 
     // Java 서버가 푸시해주는 토픽 주소를 구독(Subscribe)
     stompClient.subscribe(SUBSCRIBE_TOPIC, (message) => {
       if (message.body) {
-        console.log('📩 실시간 데이터 수신:', message.body)
+        console.debug('📩 실시간 데이터 수신:', message.body)
         
         // Java에서 JSON 형태로 쐈을 테니 파싱해서 가변 변수에 매핑
         metrics.value = JSON.parse(message.body)
