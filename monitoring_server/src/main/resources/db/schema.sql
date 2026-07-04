@@ -1,4 +1,6 @@
-CREATE TABLE system_mon.system_status_raw (
+DROP TABLE IF EXISTS system_mon.system_status_raw;
+
+CREATE UNLOGGED TABLE system_mon.system_status_raw (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     hostname VARCHAR(50) NOT NULL,
     cpu_usage REAL NOT NULL,
@@ -8,7 +10,7 @@ CREATE TABLE system_mon.system_status_raw (
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE system_mon.system_status_daily (
+CREATE TABLE IF NOT EXISTS system_mon.system_status_daily (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     hostname VARCHAR(50) NOT NULL,
     cpu_avg DOUBLE PRECISION NOT NULL,                 -- double -> DOUBLE PRECISION (정밀한 평균값)
@@ -20,4 +22,5 @@ CREATE TABLE system_mon.system_status_daily (
     log_date DATE NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
     PRIMARY KEY (log_date, hostname)                   -- 복합키 설정으로 조회 성능 최적화
-);
+)
+;

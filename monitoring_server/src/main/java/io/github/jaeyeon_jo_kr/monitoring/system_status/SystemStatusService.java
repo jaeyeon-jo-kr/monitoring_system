@@ -1,4 +1,4 @@
-package com.example.demo;
+package io.github.jaeyeon_jo_kr.monitoring.system_status;
 
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
@@ -7,18 +7,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SystemStatusManager {
+public class SystemStatusService {
 
-    private ConcurrentHashMap<String, DeviceStatus> deviceStatusMap;
+    private ConcurrentHashMap<String, SystemStatus> deviceStatusMap;
 
-    SystemStatusManager(){
-       this.deviceStatusMap  = new ConcurrentHashMap<String, DeviceStatus>();
+    private final SystemStatusRepositoryJPA systemStatusRepositoryJPA;
+
+    public SystemStatusService(SystemStatusRepositoryJPA systemStatusRepositoryJPA){
+       this.deviceStatusMap  = new ConcurrentHashMap<String, SystemStatus>();
+       this.systemStatusRepositoryJPA = systemStatusRepositoryJPA;
     }
     
-    public synchronized DeviceStatus updateStatus(String hostname, double cpuUsage, double memoryUsage, long rx, long tx) {
-        DeviceStatus deviceStatus = new DeviceStatus(hostname,cpuUsage,memoryUsage, rx, tx);
-        deviceStatusMap.put(hostname, deviceStatus);
-        return deviceStatus;
+    public synchronized void updateStatus(SystemStatus systemStatus) {
+        deviceStatusMap.put(systemStatus.hostname, systemStatus);
+        systemStatusRepositoryJPA.save(systemStatus);
     }
 
     public synchronized String getSystemList(){

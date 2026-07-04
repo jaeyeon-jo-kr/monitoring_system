@@ -1,4 +1,4 @@
-package com.example.demo;
+package io.github.jaeyeon_jo_kr.monitoring.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

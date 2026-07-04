@@ -1,4 +1,4 @@
-package com.example.demo;
+package io.github.jaeyeon_jo_kr.monitoring.tcpserver;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -14,6 +14,8 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.github.jaeyeon_jo_kr.monitoring.system_status.SystemStatusWebSocketService;
+
 @Component
 public class AgentSocketServer implements CommandLineRunner {
 
@@ -21,14 +23,15 @@ public class AgentSocketServer implements CommandLineRunner {
 
     private final ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-    private final SystemStatusManager statusManager;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ObjectMapper mapper = new ObjectMapper();
 
-    public AgentSocketServer(SystemStatusManager statusManager, 
-        SimpMessagingTemplate messagingTemplate) {
-        this.statusManager = statusManager;
+    private final SystemStatusWebSocketService systemStatusWebSocketService;
+
+    public AgentSocketServer(
+        SimpMessagingTemplate messagingTemplate,
+        SystemStatusWebSocketService systemStatusWebSocketService) {
         this.messagingTemplate = messagingTemplate;
+        this.systemStatusWebSocketService = systemStatusWebSocketService;
     }
 
     @Override
@@ -74,10 +77,10 @@ public class AgentSocketServer implements CommandLineRunner {
 
                     switch (packetType) {
                         case "CPU_INFO":
-                            handleInfoPacket(tokens);
+                            systemStatusWebSocketService.handleInfoPacket(tokens);
                             break;
                         case "DATA":
-                            handleDataPacket(tokens);
+                            systemStatusWebSocketService.handleDataPacket(tokens, messagingTemplate);
                             break;
                         default:
                             System.out.println("⚠️ 알 수 없는 프로토콜 양식: " + packetType);
@@ -89,27 +92,5 @@ public class AgentSocketServer implements CommandLineRunner {
         }
     }
 
-    // 정적 마스터 데이터 처리 (CPU 명칭, 코어 개수 등)
-    private void handleInfoPacket(String[] tokens) {
-        if (tokens.length >= 3) {
-            String cpuModel = tokens[1];
-            String core = tokens[2];
-            System.out.println("📌 [마스터 등록] 사양: " + cpuModel + " / 코어 수: " + core);
-        }
-    }
-
-    // 동적 시계열 데이터 처리 (실시간 사용량 등 추후 확장용)
-    private void handleDataPacket(String[] tokens) {
-        if (tokens.length >= 3) {
-            String hostname = tokens[1];
-            double cpuUsage = Double.parseDouble(tokens[2]);
-            double memoryUsage = Double.parseDouble(tokens[3]);
-            long rx = Long.parseLong(tokens[4]);
-            long tx = Long.parseLong(tokens[5]);
-            DeviceStatus deviceStatus = statusManager.updateStatus(hostname, cpuUsage, memoryUsage, rx, tx);
-            String response = mapper.writeValueAsString(deviceStatus);
-            System.out.println("response:" + response);
-            messagingTemplate.convertAndSend("/topic/system_status", response);
-        }
-    }
+    
 }

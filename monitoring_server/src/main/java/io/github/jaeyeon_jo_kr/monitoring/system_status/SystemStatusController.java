@@ -1,14 +1,17 @@
-package com.example.demo;
+package io.github.jaeyeon_jo_kr.monitoring.system_status;
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+
+
 @Controller
-public class ResourceInfoController {
+public class SystemStatusController {
 
-    private final SystemStatusManager statusManager;
+    private final SystemStatusService statusManager;
 
-    public ResourceInfoController(SystemStatusManager statusManager) {
+    public SystemStatusController(SystemStatusService statusManager) {
         this.statusManager = statusManager;
     }
 
@@ -18,4 +21,6 @@ public class ResourceInfoController {
     {
        return statusManager.getSystemList();
     }
+
+
 }
