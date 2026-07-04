@@ -20,7 +20,13 @@ public class SystemStatusService {
     
     public synchronized void updateStatus(SystemStatus systemStatus) {
         deviceStatusMap.put(systemStatus.hostname, systemStatus);
-        systemStatusRepositoryJPA.save(systemStatus);
+        var saveResult = systemStatusRepositoryJPA.save(systemStatus);
+        if(saveResult.id <= 0)
+        {
+            System.err.println("Failed to save.");
+        }else{
+            System.out.println("Success.");
+        }
     }
 
     public synchronized String getSystemList(){
@@ -32,6 +38,10 @@ public class SystemStatusService {
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         System.err.println("Get System List:" + stringBuilder.toString());
         return stringBuilder.toString();
+    }
+
+    public synchronized void updateDailyStatus() {
+        systemStatusRepositoryJPA.findDailyStatus();
     }
 
 }

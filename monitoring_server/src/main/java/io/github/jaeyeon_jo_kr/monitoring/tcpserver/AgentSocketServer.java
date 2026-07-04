@@ -3,8 +3,6 @@ package io.github.jaeyeon_jo_kr.monitoring.tcpserver;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import tools.jackson.databind.ObjectMapper;
-
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.io.BufferedReader;
@@ -37,6 +35,7 @@ public class AgentSocketServer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Spring Boot 메인 구동 스레드가 블로킹되지 않도록 별도 쓰레드로 서버 기동
+        System.out.println("Agent Server Start.");
         new Thread(this::startServer).start();
     }
 

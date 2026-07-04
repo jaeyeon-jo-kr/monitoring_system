@@ -16,8 +16,8 @@ public class ScheduledTasks {
         this.systemStatusService = systemStatusService;
     }
 
-    @Scheduled(cron = "0 2 * * *")
+    @Scheduled(cron = "0 2 * * * *")
     public void CreateDailyRecord() {
-
+        systemStatusService.updateDailyStatus();
     }
 }
