@@ -60,12 +60,12 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div>
+    <v-card>
         <MonitoringChartPane v-for="({hostname, cpuUsage, memoryUsage, rx, tx}, index) in hostNameList"  
         :key="index" :hostname="hostname" :cpu-usage="cpuUsage" :memory-usage="memoryUsage" :rx="rx" :tx="tx"
         :connected-status = "connectedStatus"
         />
-    </div>
+    </v-card>
 </template>
 
 <style scoped>

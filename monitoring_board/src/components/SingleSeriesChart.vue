@@ -55,10 +55,6 @@ watch(props, (oldProps,newProps) => {
 }, { immediate: true })
 
 
-
-
-
-
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
@@ -74,7 +70,7 @@ const chartOptions = {
   plugins: {
     legend: {
       display: true,
-      position: 'top'
+      position: 'center'
     }
   },
   animation: {
@@ -85,9 +81,10 @@ const chartOptions = {
 
 
 <template>
-<div class="chart-wrapper">
-      <LineChart :chartData="chartData" :options="chartOptions" />
-</div>
+    <div class="text-label-medium pa-2 border-t">
+        <v-code>{{ props.label }}</v-code>
+    </div>
+    <LineChart :chartData="chartData" :options="chartOptions" />
 </template>
 
 <style scoped>
@@ -108,10 +105,5 @@ const chartOptions = {
   align-items: center;
   margin-bottom: 20px;
 }
-/* 차트 캔버스가 늘어날 운동장 크기 지정 */
-.chart-wrapper {
-  position: relative;
-  height: 350px;
-  width: 100%;
-}
+
 </style>

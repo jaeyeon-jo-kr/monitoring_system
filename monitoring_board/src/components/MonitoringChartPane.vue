@@ -23,8 +23,20 @@ const props = defineProps<{
         {{ connectedStatus ? '● LIVE' : '○ DISCONNECTED' }}
       </span>
     </div>
-    <SingleSeriesChart :label="'CPU 使用率'" :value="cpuUsage"/>
-    <SingleSeriesChart :label="'Memory 使用率'" :value="memoryUsage"/>
+    <v-slide-group>
+      <v-slide-group-item>
+        <v-card>
+          <SingleSeriesChart :label="'CPU 使用率'" :value="cpuUsage"/>
+        </v-card>
+      </v-slide-group-item>
+      <v-slide-group-item>
+        <v-card>
+          <SingleSeriesChart :label="'Memory 使用率'" :value="memoryUsage"/>
+        </v-card>
+      </v-slide-group-item>
+    </v-slide-group>
+    
+    
   </div>
 </template>
 
