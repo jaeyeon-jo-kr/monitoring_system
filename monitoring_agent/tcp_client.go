@@ -12,8 +12,6 @@ import (
 const connectAddr = "127.0.0.1:4567"
 
 func RunClient() {
-
-	// 1. 종료 시그널 설정 (Ctrl+C 처리를 우아하게)
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
@@ -26,7 +24,7 @@ func RunClient() {
 
 	defer conn.Close()
 
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(3 * time.Second)
 	defer ticker.Stop()
 
 	cpuInfo, err := GetCpuInfo()
