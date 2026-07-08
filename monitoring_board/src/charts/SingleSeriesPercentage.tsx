@@ -8,9 +8,7 @@ const chartDataReducer = (state, action) => {
 
 interface DataType {
   name:string
-  uv:number
-  pv:number
-  amt:number
+  val:number
 }
 
 // // #region Sample data
@@ -53,22 +51,39 @@ interface DataType {
 //   },
 // ];
 
-// #endregion
-export const SingleSeriesPercentage = (newValue:number) => {
-  const [data, setData]= useState<DataType[]>([]);
-  useEffect(()=>{
-    setData((data) => [...data, {
-      name:'abc',
-      uv:newValue, 
-      pv:4800,
-      amt:100}])
-  },[newValue])
+const getTimeStamp = ():string => {
+    const now = new Date()
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
+}
 
+// #endregion
+export const SingleSeriesPercentage = ({ newValue }: { newValue: number }) => {
+  const [currentData, setCurrentData]= useState<DataType[]>([]);
+  const [prevValue, setPrevValue] = useState(newValue);
+  useEffect(()=>{
+  },[newValue])
+  console.debug('prev',prevValue)
+  console.debug('new',newValue)
+
+  if (!isNaN(newValue) && prevValue !== newValue) {
+    setPrevValue(newValue);
+    
+    const next = { name: getTimeStamp(), val: newValue } as DataType;
+    
+    // 콜백 방식을 사용하여 최신 prev 상태를 안전하게 가공합니다.
+    setCurrentData((prev) => {
+      if (prev.length >= 20) {
+        return [...prev.slice(1), next];
+      }
+      return [...prev, next];
+    });
+  }
+   
   return (
     <LineChart
       style={{ width: '100%', aspectRatio: 1.618, maxWidth: 600 }}
       responsive
-      data={data}
+      data={currentData}
       margin={{
         top: 20,
         right: 20,
@@ -77,10 +92,10 @@ export const SingleSeriesPercentage = (newValue:number) => {
       }}
     >
       <CartesianGrid stroke="#aaa" strokeDasharray="5 5" />
-      <Line type="monotone" dataKey="uv" stroke="purple" strokeWidth={2} name="My data series name" />
+      <Line type="monotone" dataKey="val" stroke="purple" strokeWidth={2} name="CPU　利用率" />
       <XAxis dataKey="name" />
       <YAxis width="auto" 
-        label={{ value: 'UV', position: 'insideLeft', angle: -90 }} 
+        label={{ value: 'percent', position: 'insideLeft', angle: -90 }} 
         tickFormatter={(value) => `${value}%`}/>
       <Legend align="right" />
       <RechartsDevtools />

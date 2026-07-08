@@ -12,28 +12,24 @@ interface SystemStatus {
   tx:string
 }
 
-const updateSystemListHandler = (systemStatus: SystemStatus[], 
-  setSystemStatus: React.Dispatch<SetStateAction<SystemStatus[]>>) => 
+const updateSystemListHandler = (setSystemStatusList: React.Dispatch<SetStateAction<Map<string, SystemStatus>>>) => 
 {
   return  (messageBody:string) => {
     const metrics = JSON.parse(messageBody)
     console.debug('message body',messageBody)
-    setSystemStatus(
-      systemStatus.map((system) => {
-            if(system.hostname === metrics.hostname)
-            {
-                return {
-                    hostname:system.hostname,
-                    cpuUsage:String(metrics.cpuUsage),
-                    memoryUsage:String(metrics.memoryUsage),
+    
+    setSystemStatusList((systemStatusList) => {
+      console.debug('metrics.hostname ',metrics.hostname)
+      const newMap = new Map(systemStatusList)
+        newMap.set(metrics.hostname, {
+                    hostname:metrics.hostname,
+                    cpuUsage:metrics.cpuUsage,
+                    memoryUsage:metrics.memoryUsage,
                     rx:String(metrics.rx),
                     tx:String(metrics.tx)
-                }
-            }else{
-                return system
-            }
-        }
-      )
+                })
+        return newMap
+      }
     )
   }
 }
@@ -44,19 +40,27 @@ const onConnectHandler = () => {
 }
 
 const App = () => {
-  const [systemStatus, setSystemStatus] = useState<SystemStatus[]>([])
+  const [systemStatusList, setSystemStatusList] = useState<Map<string, SystemStatus>>(new Map())
+
+  const getCpuUsage = ():number =>  {
+    const firstValue = systemStatusList.values().next();
+    
+    return Number(firstValue?.value?.cpuUsage)    
+  }
+  const cpuUsage = getCpuUsage()
 
   useEffect(() => {
-    subscriptionMap.set(SUBSCRIBE_SYSTEM_STATUS_TOPIC, updateSystemListHandler(systemStatus, setSystemStatus))
+    subscriptionMap.set(SUBSCRIBE_SYSTEM_STATUS_TOPIC, updateSystemListHandler(setSystemStatusList))
     connectWebSocket(onConnectHandler)
 
     return () => {
       deactivateWebSocket()
     }
   },[]);
+  console.debug('cpuUsage', cpuUsage)
   return (
     <>
-      <SingleSeriesPercentage newValue={systemStatus.length > 0 ? Number(systemStatus[0].cpuUsage) : 0} />
+      <SingleSeriesPercentage newValue={cpuUsage} />
     </>
   )
 }
