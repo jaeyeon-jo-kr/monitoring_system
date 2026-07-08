@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from 'recharts';
 import { RechartsDevtools } from '@recharts/devtools';
+import { useIntersection } from '@mantine/hooks';
 
 interface DataType {
   name:string
@@ -16,6 +17,9 @@ const getTimeStamp = ():string => {
 export const MemoryUsageChart = ({ newValue }: { newValue: number }) => {
   const [currentData, setCurrentData]= useState<DataType[]>([]);
   const [prevValue, setPrevValue] = useState(newValue);
+  const { ref, entry } = useIntersection({
+      threshold: 0.5,
+  });
 
   if (!isNaN(newValue) && prevValue !== newValue) {
     setPrevValue(newValue); 
@@ -40,9 +44,10 @@ export const MemoryUsageChart = ({ newValue }: { newValue: number }) => {
         bottom: 5,
         left: 0,
       }}
+      ref={ref}
     >
       <CartesianGrid stroke="#aaa" strokeDasharray="5 5" />
-      <Line type="monotone" dataKey="val" stroke="red" strokeWidth={2} name="メモリ利用率" />
+      <Line type="monotone" isAnimationActive={entry?.isIntersecting} dataKey="val" stroke="red" strokeWidth={2} name="メモリ利用率" />
       <XAxis dataKey="name" />
       <YAxis width="auto" 
         label={{ value: 'percent', position: 'insideLeft', angle: -90 }} 

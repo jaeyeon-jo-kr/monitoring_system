@@ -1,4 +1,4 @@
-import { useEffect, useState, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type SetStateAction } from "react";
 import "./App.css";
 import { CpuUsageChart } from "./charts/CpuUsageChart";
 import {
@@ -9,10 +9,11 @@ import {
 } from "./websocket/websocket";
 import "@mantine/core/styles.css";
 
-import { MantineProvider } from "@mantine/core";
+import { Box, Center, MantineProvider, Paper, SegmentedControl } from "@mantine/core";
 import { AppShell } from "@mantine/core";
 import { MemoryUsageChart } from "./charts/MemoryUsageChart";
 import { TxRxChart } from "./charts/TxRxChart";
+import { useIntersection } from '@mantine/hooks';
 
 interface SystemStatus {
   hostname: string;
@@ -50,26 +51,16 @@ const App = () => {
   const [systemStatusList, setSystemStatusList] = useState<
     Map<string, SystemStatus>
   >(new Map());
-
-  const getCpuUsage = (): number => {
-    const firstValue = systemStatusList.values().next();
-    return Number(firstValue?.value?.cpuUsage || 0);
-  };
-  const cpuUsage = getCpuUsage();
-  const getMemoryUsage = (): number => {
-    const firstValue = systemStatusList.values().next();
-    return Number(firstValue?.value?.memoryUsage || 0);
-  };
-  const memoryUsage = getMemoryUsage();
-  const getTx = ():number => {
-    const firstValue = systemStatusList.values().next();
-    return Number(firstValue?.value?.tx || 0);
-  }
-  const getRx = ():number => {
-    const firstValue = systemStatusList.values().next();
-    return Number(firstValue?.value?.tx || 0);
-  }
-  
+  const [hostname, setHostname] = useState('')
+  const value = systemStatusList.get(hostname)
+  const cpuUsage = Number(value?.cpuUsage || 0)
+  const memoryUsage = Number(value?.memoryUsage || 0)
+  const tx = Number(value?.tx || 0)
+  const rx = Number(value?.rx || 0)
+  const mainContainer = useRef<HTMLDivElement>(null)
+  const { segCtlRef, segCtlRefEntry } = useIntersection({
+    threshold: 0.5
+  });
 
   useEffect(() => {
     subscriptionMap.set(
@@ -82,18 +73,26 @@ const App = () => {
       deactivateWebSocket();
     };
   }, []);
+  const getHostNameList = () => {
+    return Array.from(systemStatusList.keys()).map((hostname) => {return {label: hostname, value:hostname}})
+  }
+  useEffect(()=>{
+    console.log("intersected?", segCtlRefEntry?.isIntersecting)
+  }, [segCtlRefEntry?.isIntersecting])
+
   return (
     <MantineProvider>
-      <AppShell header={{ height:60}}>
+      <AppShell header={{ height:60}} >
         <AppShell.Header>
           <div>Monitoring Board</div>
         </AppShell.Header>
         <AppShell.Navbar>
         </AppShell.Navbar>
         <AppShell.Main>
-          <CpuUsageChart newValue={cpuUsage} />
-          {/* <MemoryUsageChart newValue={memoryUsage} /> */}
-          {/* <TxRxChart tx={getTx()} rx={getRx()} /> */}
+            <SegmentedControl  data={getHostNameList()} onChange={setHostname} value={hostname}/>
+            <CpuUsageChart newValue={cpuUsage}/>
+            <MemoryUsageChart newValue={memoryUsage} />
+            <TxRxChart tx={tx} rx={rx} />
         </AppShell.Main>
       </AppShell>
     </MantineProvider>

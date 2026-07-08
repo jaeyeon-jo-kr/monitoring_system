@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from 'recharts';
 import { RechartsDevtools } from '@recharts/devtools';
+import { useIntersection } from '@mantine/hooks';
+import { getRootElement, Paper } from '@mantine/core';
 
 interface DataType {
   name:string
@@ -14,8 +16,15 @@ const getTimeStamp = ():string => {
 
 // #endregion
 export const CpuUsageChart = ({ newValue }: { newValue: number }) => {
-  const [currentData, setCurrentData]= useState<DataType[]>([]);
-  const [prevValue, setPrevValue] = useState(newValue);
+  const [currentData, setCurrentData]= useState<DataType[]>([])
+  const [prevValue, setPrevValue] = useState(newValue)
+  
+  const { ref, entry } = useIntersection({
+    threshold: 0.5,
+  });
+  useEffect(() => {
+    console.debug('entry.isIntersecting', entry?.isIntersecting)
+  }, [entry?.isIntersecting])
 
   if (!isNaN(newValue) && prevValue !== newValue) {
     setPrevValue(newValue); 
@@ -30,7 +39,8 @@ export const CpuUsageChart = ({ newValue }: { newValue: number }) => {
   }
    
   return (
-    <LineChart
+    <Paper ref={ref}>
+      <LineChart
       style={{ width: '100%', aspectRatio: 1.618, maxWidth: 600 }}
       responsive
       data={currentData}
@@ -42,7 +52,7 @@ export const CpuUsageChart = ({ newValue }: { newValue: number }) => {
       }}
     >
       <CartesianGrid stroke="#aaa" strokeDasharray="5 5" />
-      <Line type="monotone" isAnimationActive={true} dataKey="val" stroke="purple" strokeWidth={2} name="CPU　利用率" />
+      <Line type="monotone" isAnimationActive={entry?.isIntersecting} dataKey="val" stroke="purple" strokeWidth={2} name="CPU　利用率" />
       <XAxis dataKey="name" />
       <YAxis width="auto" 
         label={{ value: 'percent', position: 'insideLeft', angle: -90 }} 
@@ -50,5 +60,6 @@ export const CpuUsageChart = ({ newValue }: { newValue: number }) => {
       <Legend align="right" />
       <RechartsDevtools />
     </LineChart>
+    </Paper>
   );
 }
