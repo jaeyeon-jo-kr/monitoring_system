@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type SetStateAction } from "react";
 import "./App.css";
-import { CpuUsageChart } from "./charts/CpuUsageChart";
 import {
   connectWebSocket,
   deactivateWebSocket,
@@ -9,12 +8,9 @@ import {
 } from "./websocket/websocket";
 import "@mantine/core/styles.css";
 
-import { Box, Center, MantineProvider, Paper, SegmentedControl } from "@mantine/core";
-import { AppShell, Stack,Button } from "@mantine/core";
-import { MemoryUsageChart } from "./charts/MemoryUsageChart";
-import { TxRxChart } from "./charts/TxRxChart";
+import { Box, MantineProvider, Paper, SegmentedControl } from "@mantine/core";
+import { AppShell } from "@mantine/core";
 import { useIntersection } from '@mantine/hooks';
-import { SystemStatusTable } from "./tables/SystemStatusTable";
 
 interface SystemStatus {
   hostname: string;
@@ -58,8 +54,12 @@ const App = () => {
   const memoryUsage = Number(value?.memoryUsage || 0)
   const tx = Number(value?.tx || 0)
   const rx = Number(value?.rx || 0)
-  const [selectedByNav, setSelectedByNav] = useState('table') 
-  
+  const mainContainer = useRef<HTMLDivElement>(null)
+  const { segCtlRef, segCtlRefEntry } = useIntersection({
+    root: mainContainer.current,
+    threshold: 1,
+  });
+
   useEffect(() => {
     subscriptionMap.set(
       SUBSCRIBE_SYSTEM_STATUS_TOPIC,
@@ -74,35 +74,28 @@ const App = () => {
   const getHostNameList = () => {
     return Array.from(systemStatusList.keys()).map((hostname) => {return {label: hostname, value:hostname}})
   }
-
+  useEffect(()=>{
+    console.log("intersected?", segCtlRefEntry?.isIntersecting)
+  }, [segCtlRefEntry?.isIntersecting])
   return (
     <MantineProvider>
-      <AppShell header={{ height:60}} navbar={{ width: 100, breakpoint: 'sm' }} >
+      <AppShell header={{ height:60}} >
         <AppShell.Header>
           <div>Monitoring Board</div>
         </AppShell.Header>
         <AppShell.Navbar>
-          <Stack>
-            <Button onClick={() => setSelectedByNav('table')} fullWidth>
-              システム状態テーブル
-            </Button>
-            <Button onClick={() => setSelectedByNav('chart')} fullWidth>
-             チャット
-            </Button>
-          </Stack>
-          
         </AppShell.Navbar>
-        <AppShell.Main>
-          {selectedByNav === 'table' ? (
-            <SystemStatusTable />
-          ) : selectedByNav === 'chart' ? (
-            <>
-              <SegmentedControl data={getHostNameList()} onChange={setHostname} value={hostname} />
-              <CpuUsageChart newValue={cpuUsage} />
-              <MemoryUsageChart newValue={memoryUsage} />
-              <TxRxChart tx={tx} rx={rx} />
-            </>
-          ) : null}
+        <AppShell.Main  h={300}>
+          <Paper h={1500} ref={mainContainer} style={{ overflowY: 'scroll' }} >
+            <Box>
+              <Paper p="xl" ref={segCtlRef}>
+               <SegmentedControl  data={getHostNameList()} onChange={setHostname} value={hostname}/>
+              </Paper>
+            </Box>
+            {/* <CpuUsageChart newValue={cpuUsage} containerRef={mainContainer} />
+            <MemoryUsageChart newValue={memoryUsage} />
+            <TxRxChart tx={tx} rx={rx} /> */}
+          </Paper>
         </AppShell.Main>
       </AppShell>
     </MantineProvider>
