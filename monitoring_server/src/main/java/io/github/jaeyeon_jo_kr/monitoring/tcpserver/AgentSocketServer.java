@@ -67,7 +67,7 @@ public class AgentSocketServer implements CommandLineRunner {
             String rawPacket;
             // C 데몬이 보낸 패킷을 '\n' 단위로 한 줄씩 스트림 독취
             while ((rawPacket = reader.readLine()) != null) {
-                System.out.println("[Java 수신 패킷]: " + rawPacket);
+                // System.out.println("[Java 수신 패킷]: " + rawPacket);
 
                 // 문자열 파싱 처리 (| 토큰 분리)
                 String[] tokens = rawPacket.split("\\|");

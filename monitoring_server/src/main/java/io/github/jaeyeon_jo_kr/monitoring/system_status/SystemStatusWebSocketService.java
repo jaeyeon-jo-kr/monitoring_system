@@ -38,7 +38,7 @@ public class SystemStatusWebSocketService {
             systemStatus.tx = Long.parseLong(tokens[5]);
             systemStatusService.updateStatus(systemStatus);
             String response = mapper.writeValueAsString(systemStatus);
-            System.out.println("response:" + response);
+            //System.out.println("response:" + response);
             messagingTemplate.convertAndSend("/topic/system_status", response);
         }
     }

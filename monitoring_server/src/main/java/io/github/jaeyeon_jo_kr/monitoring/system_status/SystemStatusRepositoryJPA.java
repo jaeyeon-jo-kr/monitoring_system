@@ -20,4 +20,6 @@ public interface SystemStatusRepositoryJPA extends JpaRepository<SystemStatus, L
     @Modifying(clearAutomatically = true)
     @Query(value = "TRUNCATE TABLE system_mon.system_status_raw", nativeQuery = true)
     void truncateSystemStatus();
+
+    
 } 
